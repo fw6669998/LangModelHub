@@ -1,0 +1,72 @@
+[
+  {
+    "model": "百度.ERNIE_Bot_4",
+    "name": "ERNIE-Bot-4",
+    "method": "completions_pro",
+    "price": 0.12,
+    "openSource": false
+  },
+  {
+    "model": "百度.ERNIE_Bot",
+    "name": "ERNIE-Bot",
+    "method": "completions",
+    "price": 0.012,
+    "openSource": false
+  },
+  {
+    "model": "百度.ERNIE_Bot_turbo",
+    "name": "ERNIE-Bot-turbo",
+    "method": "eb-instant",
+    "price": 0.008,
+    "openSource": false
+  },
+  {
+    "model": "百度.Qianfan_Chinese_Llama_2_7B",
+    "name": "Qianfan-Chinese-Llama-2-7B",
+    "method": "qianfan_chinese_llama_2_7b",
+    "price": 0.008,
+    "openSource": false
+  },
+  {
+    "model": "阿里.qwen_turbo",
+    "name": "qwen-turbo",
+    "method": "qwen-turbo",
+    "price": 0.008,
+    "openSource": false
+  },
+  {
+    "model": "阿里.qwen_plus",
+    "name": "qwen-plus",
+    "method": "qwen-turbo",
+    "price": 0.02,
+    "openSource": false
+  },
+  {
+    "model": "阿里.qwen_14b_chat",
+    "name": "qwen-14b-chat",
+    "method": "qwen-14b-chat",
+    "price": 0.008,
+    "openSource": true
+  },
+  {
+    "model": "阿里.qwen_7b_chat",
+    "name": "qwen-7b-chat",
+    "method": "qwen-7b-chat",
+    "price": 0.006,
+    "openSource": true
+  },
+  {
+    "model": "阿里.baichuan2_7b_chat_v1",
+    "name": "baichuan2-7b-chat-v1",
+    "method": "baichuan2-7b-chat-v1",
+    "price": 0.006,
+    "openSource": true
+  },
+  {
+    "model": "讯飞.spark",
+    "name": "spark",
+    "method": "spark",
+    "price": 0.03,
+    "openSource": false
+  }
+]

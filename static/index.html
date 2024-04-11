@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LangModelHub</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        #fullscreen-container {
+            width: calc(100% - 10px);
+            height: 100%;
+            border: 1px solid black;
+            /*background-color: lightgray;*/
+        }
+
+        .container {
+            width: 100%;
+            height: 88%;
+            border: 1px solid black;
+            overflow: auto;
+        }
+
+        .small-container {
+            width: calc(33.33% - 40px);
+            height: calc(50% - 20px);
+            background-color: lightblue;
+            margin: 10px;
+            float: left;
+            padding: 2px;
+        }
+
+        .dropdown {
+            /*margin-bottom: 5px;*/
+            float: left;
+            width: 80%;
+        }
+
+        .sendOne {
+            float: left;
+            margin-left: 2%;
+            width: 10%;
+        }
+
+        .close {
+            float: left;
+            margin-left: 2%;
+            width: 5%;
+        }
+
+        .dropdownContrainer {
+            /*margin-bottom: 2px;*/
+            width: 100%;
+            height: 10%;
+        }
+
+        .answer {
+            width: calc(100% - 10px);
+            height: calc(80%);
+        }
+
+        .info {
+            width: 100%;
+            height: 8%;
+            border: 1px solid black;
+            overflow: auto;
+        }
+
+    </style>
+    <script src="./asset/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+<div id="fullscreen-container">
+    <div class="container">
+    </div>
+    <div style="height: 10%; width: 100%">
+        <textarea id="chat-input" placeholder="输入问题" style="height: 100%; width: 70%; float: left;"></textarea>
+        <!--        <input type="text" id="except" placeholder="预期相似度"-->
+        <!--               style="height: 100%; width: 5%; float: left; margin-left: 2px; margin-right: 2px">-->
+        <div style="float: left; height: 100%; width: 20%">
+            <button id="send-button" style="height: 100%;width: 30%" onclick="sendMsg()">发送</button>
+            <button style="height: 100%;width: 60%" onclick="addContainer()">添加对比模型</button>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    var models = null;
+
+    getModels();
+
+    function getModels() {
+        $.ajax({
+            url: '/getModels',
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                //response 按price排序
+                // response.sort(function (a, b) {
+                //     if (a.price == null) {
+                //         return 1;
+                //     }
+                //     if (b.price == null) {
+                //         return -1;
+                //     }
+                //     return a.price - b.price;
+                // });
+                //遍历models
+                // res = ""
+                // for (var i = 0; i < response.length; i++) {
+                //     if ( response[i].openSource){
+                //         var model = response[i].model + "," + response[i].price + "," + response[i].openSource;
+                //         res += model + "\n"
+                //     }
+                // }
+                // console.log(res);
+                models = response;
+            },
+            error: function (xhr, status, error) {
+                console.log('请求失败');
+                console.log(error);
+            }
+        });
+    }
+
+    function addContainer() {
+        // if (models === null)
+        //     getModels();
+
+        var container = document.createElement("div");
+        container.className = "small-container";
+        var dropdown = document.createElement("select");
+        var dropdownContrainer = document.createElement("div");
+        dropdownContrainer.className = "dropdownContrainer";
+        dropdown.className = "dropdown";
+        for (var i = 0; i < models.length; i++) {
+            var option = document.createElement("option");
+            var model = models[i];
+            var text = model.model;
+            if (model.price != null) {
+                text += " _______ 价格:" + model.price;
+            }
+            if (model.openSource) {
+                text += " _______ 开源";
+            }
+            option.text = text;
+            option.value = models[i].model;
+            dropdown.add(option);
+        }
+        // var option1 = document.createElement("option");
+        // option1.text = "Option 1";
+        // option1.value = "selected";
+        // dropdown.add(option1);
+
+        var textarea = document.createElement("textarea");
+        textarea.className = "answer";
+        dropdownContrainer.appendChild(dropdown);
+
+        // var sendButton = document.createElement("button");
+        // sendButton.innerHTML = "发送";
+        // sendButton.className = "sendOne";
+        // sendButton.onclick = function () {
+        //     sendOneMsg();
+        // }
+        // dropdownContrainer.appendChild(sendButton);
+
+        var close = document.createElement("button");
+        close.className = "close";
+        close.innerHTML = "X";
+        close.onclick = function () {
+            container.remove();
+        }
+        dropdownContrainer.appendChild(close);
+
+        container.appendChild(dropdownContrainer);
+        container.appendChild(textarea);
+
+        // var info = document.createElement("div");
+        // info.className = "info";
+        // info.innerHTML = "统计:";
+        // container.appendChild(info);
+
+        document.querySelector(".container").appendChild(container);
+    }
+
+    function getAnswer(answerObj, model, quest, info) {
+        //统计开始时间
+        // var startTime = new Date().getTime();
+        // var expectValue = document.querySelector("#except").value;
+        // var regex = /(\d+)\%/;
+        // var match = regex.exec(expectValue);
+        // if (match) {
+        //     expectValue = match[1];
+        //     console.log("预期值是: " + expectValue);
+        // } else {
+        //     console.log("无法提取预期值");
+        // }
+        $.ajax({
+            url: '/getAnswer',
+            method: 'post',
+            // dataType: 'json',
+            data: {
+                model: model,
+                quest: quest,
+                // except: expectValue
+            },
+            success: function (response) {
+                answerObj.value = response;
+                //统计结束时间
+                // var endTime = new Date().getTime();
+                // var time = endTime - startTime;
+                // var infoText = "统计: 耗时" + time + "ms, 相似度误差:";
+                // console.log(response);
+                // 取出结果中的x%中的x的值
+                // var regex = /(\d+)\%/;
+                // var match = regex.exec(response);
+                // if (match) {
+                //     var x = match[1];
+                //     infoText += Math.abs(x - expectValue) + "%";
+                //     console.log("x的值是: " + x);
+                // } else {
+                //     console.log("无法提取值");
+                // }
+                // info.innerHTML = infoText;
+            },
+            error: function (xhr, status, error) {
+                console.log('请求失败');
+                console.log(error);
+            }
+        });
+    }
+
+    function sendMsg() {
+        //遍历所有的container
+        var containers = document.querySelectorAll(".small-container");
+        //读取chat-input的内容
+        var input = document.querySelector("#chat-input");
+        var data = [];
+        for (var i = 0; i < containers.length; i++) {
+            var container = containers[i];
+            var dropdown = container.querySelector(".dropdown");
+            var answer = container.querySelector(".answer");
+            var info = container.querySelector(".info");
+            var model = dropdown.options[dropdown.selectedIndex].value;
+            var text = answer.value;
+            // data.push({
+            //     model: model,
+            //     text: text
+            // });
+            answer.value = "等待响应...";
+            // continue;
+            //发送请求
+            getAnswer(answer, model, input.value, info);
+        }
+    }
+
+    function sendOneMsg() {
+        var input = document.querySelector("#chat-input");
+        var answer = document.querySelector(".answer");
+        var info = document.querySelector(".info");
+        var dropdown = document.querySelector(".dropdown");
+        var model = dropdown.options[dropdown.selectedIndex].value;
+        getAnswer(answer, model, input.value, info);
+    }
+
+    var input = document.querySelector("#chat-input");
+    // input.value = "nginx配置负载均衡";
+    // addContainer()
+</script>
+</html>

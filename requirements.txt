@@ -1,0 +1,5 @@
+openai~=1.7.2
+dashscope~=1.14.0
+flask~=3.0.0
+qianfan
+websocket-client==0.57.0
